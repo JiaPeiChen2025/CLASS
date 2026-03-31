@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班級專屬入口網</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        iframe { border: none; }
+    </style>
+</head>
+<body class="bg-orange-50 font-sans h-screen flex flex-col md:flex-row overflow-hidden">
+
+    <nav class="bg-white shadow-xl w-full md:w-20 md:hover:w-56 transition-[width] duration-300 ease-in-out group flex-shrink-0 flex flex-row md:flex-col p-3 md:py-5 md:px-3 gap-2 md:gap-4 z-30 overflow-x-auto md:overflow-visible border-b md:border-b-0 md:border-r border-gray-200 flex-nowrap hide-scrollbar items-center md:items-stretch">
+        
+        <div class="hidden md:flex flex-col items-center mb-4 border-b-2 border-orange-100 pb-4 pt-2 shrink-0">
+            <span class="text-4xl group-hover:text-5xl transition-all duration-300 drop-shadow-sm shrink-0">👨‍🏫</span>
+            <h2 class="text-lg font-black text-gray-800 mt-2 tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">班級管理系統</h2>
+        </div>
+        
+        <button onclick="switchAppTab('main')" id="nav-tab-main" class="flex-shrink-0 md:flex-none w-auto md:w-full px-4 py-3 md:py-4 rounded-xl font-black text-white bg-orange-500 shadow-md transition-all transform active:scale-95 text-sm md:text-base flex items-center justify-center md:justify-start gap-3 border border-orange-500 overflow-hidden whitespace-nowrap">
+            <span class="text-xl md:text-2xl min-w-[28px] text-center shrink-0">🍉</span> 
+            <span class="inline md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">班級大作戰</span>
+        </button>
+
+        <button onclick="switchAppTab('tool')" id="nav-tab-tool" class="flex-shrink-0 md:flex-none w-auto md:w-full px-4 py-3 md:py-4 rounded-xl font-bold text-gray-500 bg-gray-50 hover:bg-gray-200 transition-all transform active:scale-95 text-sm md:text-base flex items-center justify-center md:justify-start gap-3 border border-gray-100 overflow-hidden whitespace-nowrap">
+            <span class="text-xl md:text-2xl min-w-[28px] text-center shrink-0">🌟</span> 
+            <span class="inline md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">餐桶分配</span>
+        </button>
+
+        <button onclick="switchAppTab('tool2')" id="nav-tab-tool2" class="flex-shrink-0 md:flex-none w-auto md:w-full px-4 py-3 md:py-4 rounded-xl font-bold text-gray-500 bg-gray-50 hover:bg-gray-200 transition-all transform active:scale-95 text-sm md:text-base flex items-center justify-center md:justify-start gap-3 border border-gray-100 overflow-hidden whitespace-nowrap">
+            <span class="text-xl md:text-2xl min-w-[28px] text-center shrink-0">📝</span> 
+            <span class="inline md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">學生檢核表</span>
+        </button>
+
+        <div class="hidden md:block flex-1"></div>
+
+        <button onclick="openSettingsModal()" class="flex-shrink-0 md:flex-none w-auto md:w-full px-4 py-3 md:py-4 rounded-xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-300 transition-all transform active:scale-95 text-sm md:text-base flex items-center justify-center md:justify-start gap-3 border border-gray-200 overflow-hidden whitespace-nowrap md:mt-auto">
+            <span class="text-xl md:text-2xl min-w-[28px] text-center shrink-0">⚙️</span> 
+            <span class="inline md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">系統設定</span>
+        </button>
+    </nav>
+
+    <div class="flex-1 h-full overflow-y-auto relative w-full bg-orange-50 hide-scrollbar">
+        
+        <div id="app-main" class="block p-4 md:p-6 lg:p-8 w-full animate-[fadeIn_0.5s_ease-in-out]">
+            <div class="max-w-[1600px] mx-auto flex flex-col xl:flex-row gap-4">
+
+             <div class="flex-1">
+                <div class="bg-white rounded-3xl shadow-lg p-4 md:p-6 mb-8 flex flex-col lg:flex-row justify-between items-center border-l-8 border-orange-400 gap-4">
+                    <div class="text-center lg:text-left w-full lg:w-auto">
+                        <h1 class="text-2xl md:text-3xl font-black text-orange-700 mb-1">🍉 班級大作戰</h1>
+                        <p class="text-sm md:text-base text-gray-600 font-medium" id="today-point-info">讀取中...</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:flex md:flex-wrap items-stretch gap-2 md:gap-3 w-full lg:w-auto justify-center lg:justify-end">
+                        
+                        <button onclick="openCountdownSettings()" class="col-span-2 md:col-auto bg-white px-3 py-2 md:px-4 md:py-3 rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:bg-rose-50 hover:border-rose-200 transition-all flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center min-w-[120px]">
+                            <span id="display-event-name" class="text-gray-600 text-sm md:text-base font-bold whitespace-nowrap">距離 目標</span>
+                            <div class="flex items-baseline gap-1 whitespace-nowrap">
+                                <span id="display-countdown-days" class="text-3xl md:text-4xl font-black text-rose-500 drop-shadow-sm">--</span>
+                                <span class="text-gray-500 text-xs md:text-sm font-bold">天</span>
+                            </div>
+                        </button>
+                        
+                        <button onclick="openTimerModal()" class="bg-teal-100 text-teal-700 font-bold px-2 py-3 md:px-3 rounded-xl hover:bg-teal-200 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-1"><span class="text-lg md:text-xl">⏱️</span> <span class="text-sm md:text-base whitespace-nowrap">計時</span></button>
+                        <button onclick="toggleMultiSelectMode()" id="btn-multi-select" class="bg-indigo-100 text-indigo-700 font-bold px-2 py-3 md:px-3 rounded-xl hover:bg-indigo-200 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-1"><span class="text-lg md:text-xl">✅</span> <span class="text-sm md:text-base whitespace-nowrap">多選</span></button>
+
+                        <button onclick="openInfoModal('announcement')" class="bg-blue-100 text-blue-700 font-bold px-2 py-3 md:px-3 rounded-xl hover:bg-blue-200 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-1"><span class="text-lg md:text-xl">📢</span> <span class="text-sm md:text-base whitespace-nowrap">公告</span></button>
+                        <button onclick="openInfoModal('homework')" class="bg-green-100 text-green-700 font-bold px-2 py-3 md:px-3 rounded-xl hover:bg-green-200 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-1"><span class="text-lg md:text-xl">📖</span> <span class="text-sm md:text-base whitespace-nowrap">聯絡簿</span></button>
+                        <button onclick="openInfoModal('tracking')" class="bg-purple-100 text-purple-700 font-bold px-2 py-3 md:px-3 rounded-xl hover:bg-purple-200 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-1"><span class="text-lg md:text-xl">✅</span> <span class="text-sm md:text-base whitespace-nowrap">作業追蹤</span></button>
+                        <button id="btn-random-draw" onclick="randomDraw()" class="w-full md:w-auto bg-yellow-400 text-yellow-950 font-extrabold px-4 py-3 rounded-xl hover:bg-yellow-500 active:scale-95 transition-all shadow-md flex items-center justify-center gap-1"><span class="text-xl">🎲</span> <span class="whitespace-nowrap">抽籤</span></button>
+                    </div>
+                </div>
+                <div id="student-grid" class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 md:gap-5"></div>
+            </div> <div class="w-full xl:w-64 shrink-0">
+                <div class="bg-white rounded-3xl shadow-lg p-5 border-t-8 border-pink-400 sticky top-6">
+                    <h2 class="text-xl font-black text-pink-600 mb-4 flex items-center gap-2">🎵 音樂點播登記</h2>
+
+                    <div class="bg-pink-50 p-4 rounded-xl mb-4 shadow-inner">
+                        <div class="mb-3">
+                            <label class="block text-sm font-bold text-pink-800 mb-1">📅 選擇日期</label>
+                            <input type="date" id="music-date" class="w-full p-2.5 rounded-lg border-2 border-pink-200 focus:outline-none focus:border-pink-400 font-bold text-gray-700 bg-white shadow-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-bold text-pink-800 mb-1">👤 學生座號</label>
+                            <input type="number" id="music-number" placeholder="請輸入座號" class="w-full p-2.5 rounded-lg border-2 border-pink-200 focus:outline-none focus:border-pink-400 font-bold text-gray-700 bg-white shadow-sm">
+                        </div>
+                        <button onclick="addMusicSchedule()" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2">
+                            ➕ 新增登記
+                        </button>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-4 h-72 overflow-y-auto hide-scrollbar border-2 border-gray-100 shadow-inner">
+                        <h3 class="font-bold text-gray-700 mb-3 border-b-2 border-gray-200 pb-2 text-sm flex items-center justify-between">
+                            <span>📋 播放排程</span>
+                            <span class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded-full">依日期排序</span>
+                        </h3>
+                        <ul id="music-schedule-list" class="space-y-3">
+                            </ul>
+                    </div>
+                </div>
+            </div> </div>
+    </div>
+
+        <div id="app-tool" class="hidden h-full w-full bg-white flex-col animate-[fadeIn_0.5s_ease-in-out]">
+            <iframe src="https://tsai33.github.io/supreme-parakeet/" class="w-full h-full flex-1 border-none"></iframe>
+        </div>
+
+        <div id="app-tool2" class="hidden h-full w-full bg-white flex-col animate-[fadeIn_0.5s_ease-in-out]">
+            <iframe src="https://tsai33.github.io/studentchecklist/" class="w-full h-full flex-1 border-none"></iframe>
+        </div>
+
+    </div>
+
+    <div id="multi-select-bar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 md:px-8 py-4 rounded-full shadow-2xl z-50 flex items-center gap-3 md:gap-6 hidden transition-transform duration-300 translate-y-20">
+        <span id="multi-select-count" class="font-bold text-base md:text-lg whitespace-nowrap text-indigo-300">已選擇: 0 人</span>
+        <div class="w-px h-6 bg-gray-500"></div>
+        <button onclick="batchAddPoints(10)" class="bg-green-500 hover:bg-green-600 px-4 py-2.5 rounded-full font-bold transition-colors whitespace-nowrap shadow-md">+10 點</button>
+        <button onclick="batchAddPoints(-10)" class="bg-red-500 hover:bg-red-600 px-4 py-2.5 rounded-full font-bold transition-colors whitespace-nowrap shadow-md">-10 點</button>
+        <button onclick="toggleMultiSelectMode()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2.5 rounded-full font-bold transition-colors whitespace-nowrap">取消</button>
+    </div>
+
+    <div id="timer-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl w-full max-w-lg relative transform transition-all border border-gray-100 flex flex-col items-center">
+            <button onclick="closeTimerModal()" class="absolute top-4 right-6 text-gray-400 hover:text-red-500 text-6xl font-light z-10 leading-none">&times;</button>
+            <h2 class="text-3xl md:text-4xl font-black text-teal-700 mb-8 flex items-center gap-2">⏱️ 課堂計時器</h2>
+            
+            <div id="timer-display" class="text-[6rem] md:text-[8rem] leading-none font-black text-gray-800 tracking-wider mb-8 tabular-nums">05:00</div>
+            
+            <div class="flex gap-3 w-full mb-8">
+                <button onclick="setTimer(1)" class="flex-1 bg-teal-50 text-teal-700 py-3 rounded-xl text-lg md:text-xl font-bold border border-teal-200 hover:bg-teal-100 transition-colors shadow-sm">+1分</button>
+                <button onclick="setTimer(3)" class="flex-1 bg-teal-50 text-teal-700 py-3 rounded-xl text-lg md:text-xl font-bold border border-teal-200 hover:bg-teal-100 transition-colors shadow-sm">+3分</button>
+                <button onclick="setTimer(5)" class="flex-1 bg-teal-50 text-teal-700 py-3 rounded-xl text-lg md:text-xl font-bold border border-teal-200 hover:bg-teal-100 transition-colors shadow-sm">+5分</button>
+                <button onclick="setTimer(10)" class="flex-1 bg-teal-50 text-teal-700 py-3 rounded-xl text-lg md:text-xl font-bold border border-teal-200 hover:bg-teal-100 transition-colors shadow-sm">+10分</button>
+            </div>
+
+            <div class="flex gap-4 w-full">
+                <button id="btn-timer-start" onclick="toggleTimer()" class="flex-1 bg-teal-500 text-white py-5 rounded-2xl font-black hover:bg-teal-600 shadow-md text-2xl md:text-3xl transition-colors">開始</button>
+                <button onclick="resetTimer()" class="flex-1 bg-gray-200 text-gray-700 py-5 rounded-2xl font-black hover:bg-gray-300 shadow-sm text-2xl md:text-3xl transition-colors">歸零</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="info-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-2 md:p-4">
+        <div class="bg-white p-4 md:p-6 rounded-3xl shadow-2xl w-full max-w-[95vw] xl:max-w-[90vw] relative transform transition-all border border-gray-100 max-h-[95vh] flex flex-col">
+            <button onclick="closeInfoModal()" class="absolute top-2 right-4 text-gray-400 hover:text-red-500 text-4xl font-light z-40">&times;</button>
+            
+            <div id="info-content-announcement" class="hidden flex-1 overflow-y-auto hide-scrollbar max-w-full px-4 mx-auto w-full">
+               <div class="flex justify-between items-center mb-4 pr-8">
+                   <h2 class="text-2xl font-black text-blue-700 flex items-center gap-2">📢 班級公告牆</h2>
+                   <div class="flex gap-2">
+                   <button onclick="openRealtimeBoard()" class="text-sm bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 font-bold transition-colors shadow-sm flex items-center">🚨 即時公告</button>
+                   <button onclick="showAddAnnouncement()" class="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-bold transition-colors shadow-sm flex items-center">➕ 新增公告</button>
+               </div>
+           </div>
+                
+                <div id="announcement-editor-area" class="hidden mb-5 bg-blue-50 p-5 rounded-xl border-2 border-blue-200 shadow-inner">
+                    <div class="font-bold text-blue-800 mb-2 flex items-center gap-2">
+                        <span class="text-lg">🗓️ 顯示/過期日期：</span>
+                        <input type="date" id="announcement-date-input" class="border-2 border-blue-200 rounded-lg p-1.5 focus:outline-none focus:border-blue-400 bg-white text-blue-900 cursor-pointer shadow-sm text-base font-bold">
+                        <span class="text-xs text-blue-500 hidden md:inline ml-2">(超過此日期系統將自動隱藏刪除)</span>
+                    </div>
+                    <textarea id="announcement-textarea" placeholder="請輸入公告內容..." class="w-full h-32 border border-blue-200 rounded-lg p-4 mt-2 mb-4 focus:outline-none focus:border-blue-400 bg-white leading-relaxed text-lg"></textarea>
+                    <div class="flex gap-2">
+                        <button onclick="saveAnnouncement()" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 shadow-sm text-lg">💾 儲存發布</button>
+                        <button onclick="hideAddAnnouncement()" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-400 text-lg">取消</button>
+                    </div>
+                </div>
+                <div id="announcement-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-4"></div>
+            </div>
+
+            <div id="info-content-homework" class="hidden flex-1 overflow-y-auto hide-scrollbar flex-col mt-2 max-w-5xl mx-auto w-full">
+                <div class="flex justify-between items-center mb-4 pr-8">
+                    <h2 class="text-2xl font-black text-green-700 flex items-center gap-2">📖 聯絡簿紀錄</h2>
+                    <button onclick="showAddContactBook()" class="text-sm bg-green-100 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-200 font-bold transition-colors shadow-sm">➕ 新增紀錄</button>
+                </div>
+                <div id="contact-book-editor" class="hidden mb-5 bg-green-50 p-4 rounded-xl border-2 border-green-200 shadow-inner">
+                    <div class="font-bold text-green-800 mb-2 flex items-center gap-2">
+                        <span class="text-lg">🗓️ 日期：</span>
+                        <input type="date" id="contact-book-date-input" class="border-2 border-green-200 rounded-lg p-1.5 focus:outline-none focus:border-green-400 bg-white text-green-900 cursor-pointer shadow-sm text-base font-bold">
+                    </div>
+                    <textarea id="contact-book-textarea" placeholder="國語：甲本 P.1~P.3&#10;數學：習作 P.5&#10;(每一行都會自動變成作業追蹤項目喔！)" class="w-full h-40 border border-green-200 rounded-lg p-4 mt-2 mb-4 focus:outline-none focus:border-green-400 bg-white leading-relaxed text-lg"></textarea>
+                    <div class="flex gap-2">
+                        <button onclick="saveContactBook()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 shadow-sm text-lg">發布</button>
+                        <button onclick="hideAddContactBook()" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-400 text-lg">取消</button>
+                    </div>
+                </div>
+                <div id="contact-book-list" class="space-y-4 pb-4"></div>
+            </div>
+            
+            <div id="info-content-tracking" class="hidden flex-col h-full mt-2 w-full">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3 pr-8 shrink-0">
+                    <h2 class="text-2xl font-black text-purple-700 flex items-center gap-2">✅ 作業追蹤</h2>
+                    <select id="tracking-date-select" onchange="renderTracking()" class="w-full md:w-64 border-2 border-purple-200 bg-purple-50 text-purple-800 rounded-xl p-2 font-bold focus:outline-none focus:border-purple-400 cursor-pointer text-base md:text-lg"></select>
+                </div>
+                <div id="tracking-tables-container" class="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar pb-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="enlarge-modal" class="fixed inset-0 z-[60] hidden flex-col transition-colors duration-300">
+        <div id="enlarge-header" class="flex justify-between items-center p-4 md:p-6 text-white shadow-lg">
+            <h2 id="enlarge-title" class="text-4xl md:text-6xl lg:text-7xl font-black tracking-wider drop-shadow-md">標題</h2>
+            <button onclick="closeEnlargeModal()" class="text-white hover:opacity-75 text-5xl md:text-7xl font-light leading-none px-4">&times;</button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 md:p-12 lg:p-16 flex justify-center items-start">
+            <div id="enlarge-box" class="w-full max-w-[95%] lg:max-w-6xl bg-white p-8 md:p-16 lg:p-20 rounded-[2rem] shadow-2xl border-4 mt-2 md:mt-8">
+                <div id="enlarge-content" class="text-5xl md:text-7xl lg:text-[80px] text-gray-900 whitespace-pre-wrap leading-snug md:leading-tight font-black tracking-wide"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="countdown-setting-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-5 md:p-7 rounded-3xl shadow-2xl w-full max-w-sm relative transform transition-all border border-gray-100 flex flex-col">
+            <button onclick="closeCountdownSettings()" class="absolute top-2 right-4 text-gray-400 hover:text-red-500 text-4xl font-light z-10">&times;</button>
+            <h2 class="text-2xl font-black text-rose-700 mb-5 flex items-center gap-2">⏳ 倒數設定</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 font-bold mb-1 text-sm">目標名稱</label>
+                    <input type="text" id="input-event-name" placeholder="請輸入目標名稱" class="w-full border-2 border-rose-200 rounded-xl p-2.5 focus:outline-none focus:border-rose-400 font-bold bg-rose-50 text-rose-900">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-bold mb-1 text-sm">目標日期</label>
+                    <input type="date" id="input-event-date" class="w-full border-2 border-rose-200 rounded-xl p-2.5 focus:outline-none focus:border-rose-400 font-bold bg-rose-50 text-rose-900 cursor-pointer">
+                </div>
+                <button onclick="saveCountdownSettings()" class="w-full bg-rose-500 text-white px-4 py-3 rounded-xl font-bold shadow-sm hover:bg-rose-600 mt-2 text-lg transition-colors">💾 儲存設定</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-5 md:p-7 rounded-3xl shadow-2xl w-full max-w-4xl relative transform transition-all border border-gray-100 flex flex-col max-h-[90vh]">
+            <button onclick="closeSettingsModal()" class="absolute top-2 right-4 text-gray-400 hover:text-red-500 text-5xl font-light leading-none z-10">&times;</button>
+            <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-4 flex items-center gap-2 shrink-0">⚙️ 系統設定面板</h2>
+            
+            <div class="flex-1 overflow-y-auto hide-scrollbar flex flex-col md:flex-row gap-6 pb-2">
+                <div class="flex-1 bg-orange-50 p-4 rounded-2xl border-2 border-orange-100 shadow-inner flex flex-col">
+                    <h3 class="font-bold text-orange-800 mb-2 flex items-center gap-2">👨‍🎓 學生名單設定</h3>
+                    <p class="text-xs text-gray-500 mb-2">請直接在此編輯名單，一行一個名字。</p>
+                    <textarea id="settings-students-input" class="w-full flex-1 border border-orange-200 rounded-xl p-3 focus:outline-none focus:border-orange-400 bg-white font-medium leading-relaxed min-h-[200px]" placeholder="例如：&#10;王小明&#10;陳小華..."></textarea>
+                </div>
+                
+                <div class="flex-1 bg-green-50 p-4 rounded-2xl border-2 border-green-100 shadow-inner flex flex-col">
+                    <h3 class="font-bold text-green-800 mb-2 flex items-center gap-2">🎁 兌換獎勵設定</h3>
+                    <p class="text-xs text-gray-500 mb-2">格式請輸入：<b class="text-green-700">獎品名稱, 點數</b> (一行一個)。</p>
+                    <textarea id="settings-rewards-input" class="w-full flex-1 border border-green-200 rounded-xl p-3 focus:outline-none focus:border-green-400 bg-white font-medium leading-relaxed min-h-[200px]" placeholder="例如：&#10;國語生字少一格, 100..."></textarea>
+                </div>
+            </div>
+            
+            <div class="mt-4 shrink-0 border-t pt-4">
+                <button onclick="saveSystemSettings()" class="w-full bg-gray-800 text-white px-4 py-4 rounded-xl font-bold shadow-md hover:bg-gray-900 text-lg transition-colors flex items-center justify-center gap-2">💾 儲存並套用所有設定</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="action-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-5 md:p-7 rounded-3xl shadow-2xl w-full max-w-md relative transform transition-all border border-gray-100 flex flex-col max-h-[90vh]">
+            <button onclick="closeModal()" class="absolute top-2 right-4 text-gray-400 hover:text-red-500 text-5xl font-light leading-none z-10">&times;</button>
+            
+            <div class="text-center mb-5 shrink-0 relative">
+                <div class="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-2">
+                    <div id="modal-avatar" class="w-full h-full rounded-full bg-orange-50 border-4 border-white shadow-md flex items-center justify-center text-5xl md:text-6xl select-none overflow-hidden"></div>
+                    <label for="avatar-upload" class="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded-full cursor-pointer hover:bg-gray-700 shadow-md transition-transform hover:scale-110 flex items-center justify-center text-sm md:text-base">📷</label>
+                    <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                </div>
+                <h2 id="modal-name" class="text-xl md:text-2xl font-bold text-gray-800">學生姓名</h2>
+                <p class="text-gray-500 text-sm md:text-base mt-1">累積: <span id="modal-points" class="text-orange-600 font-black text-xl md:text-2xl">0</span> 點</p>
+            </div>
+            
+            <div class="flex border-b mb-4 text-xs md:text-sm overflow-x-auto whitespace-nowrap hide-scrollbar border-gray-200 shrink-0">
+                <button onclick="switchTabAction('add')" id="tab-add" class="px-2 py-2 border-b-2 border-orange-500 text-orange-600 font-bold transition-colors">加扣點</button>
+                <button onclick="switchTabAction('redeem')" id="tab-redeem" class="px-2 py-2 text-gray-500 font-bold hover:text-orange-600 transition-colors">兌換獎勵</button>
+                <button onclick="switchTabAction('point-history')" id="tab-point-history" class="px-2 py-2 text-gray-500 font-bold hover:text-orange-600 transition-colors">歷史紀錄</button>
+                <button onclick="switchTabAction('history')" id="tab-history" class="px-2 py-2 text-gray-500 font-bold hover:text-orange-600 transition-colors">遲到紀錄</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto hide-scrollbar pb-2">
+                <div id="section-add" class="space-y-4">
+                    <div class="flex gap-2 md:gap-3">
+                        <button id="btn-punctual" onclick="quickAdd('punctual')" class="flex-1 bg-green-500 text-white py-3 md:py-4 rounded-xl font-bold md:text-lg hover:bg-green-600 active:scale-95 transition-all shadow-md flex flex-col items-center justify-center"><span>🌅 準時加點</span><span id="label-punctual" class="text-xs font-normal opacity-90">+0 點</span></button>
+                        <button id="btn-late" onclick="quickAdd('late')" class="flex-1 bg-red-500 text-white py-3 md:py-4 rounded-xl font-bold md:text-lg hover:bg-red-600 active:scale-95 transition-all shadow-md flex flex-col items-center justify-center"><span>🏃 登記遲到</span><span id="label-late" class="text-xs font-normal opacity-90">-0 點</span></button>
+                    </div>
+
+                    <div class="relative flex items-center py-1"><div class="flex-grow border-t border-gray-200"></div><span class="flex-shrink-0 mx-4 text-gray-400 text-xs">手動特殊調整</span><div class="flex-grow border-t border-gray-200"></div></div>
+                    
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="custom-point-input" placeholder="正數加點，負數按 ➖" class="flex-1 border-2 border-gray-200 p-2.5 rounded-xl focus:outline-none focus:border-orange-400 text-center font-bold text-sm md:text-base bg-gray-50 shadow-inner">
+                        <button onclick="submitCustomPoints()" class="bg-gray-800 text-white px-4 py-2.5 rounded-xl font-bold hover:bg-gray-900 active:scale-95 transition-all text-sm shadow-sm">確認</button>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 mt-2">
+                        <button onclick="appendNumpad('1')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">1</button>
+                        <button onclick="appendNumpad('2')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">2</button>
+                        <button onclick="appendNumpad('3')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">3</button>
+                        <button onclick="appendNumpad('4')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">4</button>
+                        <button onclick="appendNumpad('5')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">5</button>
+                        <button onclick="appendNumpad('6')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">6</button>
+                        <button onclick="appendNumpad('7')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">7</button>
+                        <button onclick="appendNumpad('8')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">8</button>
+                        <button onclick="appendNumpad('9')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">9</button>
+                        <button onclick="appendNumpad('-')" class="bg-orange-100 border-2 border-orange-200 text-orange-700 py-2 rounded-lg font-black hover:bg-orange-200 active:bg-orange-300 shadow-sm transition-colors text-lg">➖ (負號)</button>
+                        <button onclick="appendNumpad('0')" class="bg-white border-2 border-gray-100 py-2 rounded-lg font-bold text-gray-700 hover:bg-orange-50 active:bg-orange-100 shadow-sm transition-colors text-lg">0</button>
+                        <button onclick="appendNumpad('backspace')" class="bg-red-50 border-2 border-red-100 text-red-600 py-2 rounded-lg font-bold hover:bg-red-100 active:bg-red-200 shadow-sm transition-colors text-lg">⌫ 刪除</button>
+                    </div>
+                </div>
+
+                <div id="section-redeem" class="hidden space-y-3">
+                    <div id="reward-list-container" class="h-48 overflow-y-auto border-2 border-gray-200 rounded-xl p-2 space-y-2 bg-gray-50 hide-scrollbar"></div>
+                    <div class="mt-2 flex gap-2">
+                        <input type="number" id="redeem-point-input" placeholder="扣除點數" class="flex-1 border-2 border-gray-200 p-2 rounded-xl focus:outline-none focus:border-green-400 font-bold text-center bg-gray-50 shadow-inner text-green-700">
+                        <button onclick="submitRedemption()" class="bg-green-500 text-white px-4 py-2 rounded-xl font-bold shadow-sm hover:bg-green-600">兌換</button>
+                    </div>
+                </div>
+                
+                <div id="section-point-history" class="hidden"><div class="bg-gray-50 border rounded-xl p-3 h-48 overflow-y-auto hide-scrollbar shadow-inner"><ul id="point-history-list" class="space-y-2"></ul></div></div>
+                <div id="section-history" class="hidden"><div class="bg-gray-50 border rounded-xl p-3 h-48 overflow-y-auto hide-scrollbar shadow-inner"><ul id="late-history-list" class="space-y-2"></ul></div></div>
+            </div>
+        </div>
+    </div>
+    <div id="realtime-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex-col items-center justify-center z-[70] p-4 md:p-10">
+        <div class="w-full max-w-6xl bg-white rounded-3xl shadow-2xl flex flex-col h-full max-h-[85vh] overflow-hidden relative">
+            <div class="bg-red-500 text-white p-4 md:p-6 flex justify-between items-center shrink-0">
+                <h2 class="text-3xl md:text-4xl font-black flex items-center gap-3">🚨 即時公告看板</h2>
+                <div class="flex gap-4">
+                    <button id="btn-edit-realtime" onclick="toggleRealtimeEdit()" class="bg-white text-red-600 hover:bg-red-50 px-6 py-2 rounded-xl font-bold text-xl transition-colors shadow-sm">編輯</button>
+                    <button onclick="closeRealtimeBoard()" class="text-white hover:text-red-200 text-5xl leading-none font-light">&times;</button>
+                </div>
+            </div>
+            
+            <div class="flex-1 p-6 md:p-12 relative bg-yellow-50">
+                <div id="realtime-display" class="w-full h-full text-5xl md:text-9xl text-gray-800 font-bold whitespace-pre-wrap overflow-y-auto leading-normal hide-scrollbar"></div>
+                <textarea id="realtime-input" class="hidden w-full h-full text-4xl md:text-5xl text-gray-800 font-bold bg-white border-4 border-red-200 rounded-2xl p-6 focus:outline-none focus:border-red-400 resize-none shadow-inner" placeholder="請在這裡輸入臨時要宣布的事項..."></textarea>
+            </div>
+        </div>
+    </div>
+    <script>
+        // ==========================================
+        // 🌟 左側導覽列 切換功能
+        // ==========================================
+        function switchAppTab(tabName) {
+            const tabs = ['main', 'tool', 'tool2'];
+            const activeClass = "flex-shrink-0 md:flex-none w-auto md:w-full px-4 py-3 md:py-4 rounded-xl font-black text-white bg-orange-500 shadow-md transition-all transform active:scale-95 text-sm md:text-base flex items-center justify-center md:justify-start gap-3 border border-orange-500 overflow-hidden whitespace-nowrap";
+            const inactiveClass = "flex-shrink-0 md:flex-none w-auto md:w-full px-4 py-3 md:py-4 rounded-xl font-bold text-gray-500 bg-gray-50 hover:bg-gray-200 transition-all transform active:scale-95 text-sm md:text-base flex items-center justify-center md:justify-start gap-3 border border-gray-100 overflow-hidden whitespace-nowrap";
+
+            tabs.forEach(t => {
+                document.getElementById(`app-${t}`).classList.add('hidden');
+                document.getElementById(`app-${t}`).classList.remove('flex', 'block');
+                document.getElementById(`nav-tab-${t}`).className = inactiveClass;
+            });
+
+            const activeApp = document.getElementById(`app-${tabName}`);
+            activeApp.classList.remove('hidden');
+            activeApp.classList.add(tabName === 'main' ? 'block' : 'flex');
+            document.getElementById(`nav-tab-${tabName}`).className = activeClass;
+        }
+
+        const dailyPointsMap = { 1: 100, 2: 200, 3: 300, 4: 400, 5: 500, 6: 100, 0: 100 };
+        const dayNames = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        let currentTodayPoints = 0; 
+        const fruits = ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍇', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🥑', '🍏', '🍇', '🍊', '🍋', '🍉', '🍓', '🍑', '🍍', '🍒', '🥭', '🫐', '🥥'];
+
+        const HW_STATUSES = ['缺交', '已交', '訂正', '完成'];
+        const HW_COLORS = {
+            '缺交': 'bg-red-100 text-red-700 border-red-300',
+            '已交': 'bg-green-100 text-green-700 border-green-300',
+            '訂正': 'bg-yellow-100 text-yellow-700 border-yellow-300',
+            '完成': 'bg-blue-100 text-blue-700 border-blue-300'
+        };
+
+        let appRewards = JSON.parse(localStorage.getItem('classAppRewards')) || [
+            { name: "國語生字少一格", cost: 100 },
+            { name: "國語生字少兩格", cost: 200 },
+            { name: "國語語詞少一遍", cost: 150 },
+            { name: "國語語詞少兩遍", cost: 300 },
+            { name: "免當值日生一次", cost: 150 },
+            { name: "免午休一次", cost: 200 },
+            { name: "免抬餐一次", cost: 250 },
+            { name: "午休時間播放音樂", cost: 150 },
+            { name: "兌換文具用品", cost: 400 },
+            { name: "提早打菜+吃飯一次", cost: 250 },
+            { name: "圈詞少一遍", cost: 300 }
+        ];
+
+        let appAnnouncements = [];
+        try {
+            let stored = localStorage.getItem('classAppAnnouncements');
+            if (stored) { appAnnouncements = JSON.parse(stored); } 
+            else { appAnnouncements = [{ date: getFormattedTime().split(' ')[0], content: "🌟 歡迎來到班級專屬入口網！" }]; }
+        } catch(e) { appAnnouncements = []; }
+
+        let currentEditAnnouncementIndex = -1;
+
+        let appContactBook = JSON.parse(localStorage.getItem('classAppContactBook')) || [];
+        let currentEditContactBookIndex = -1;
+        
+        let currentTrackingDate = '';
+        let currentTrackingTasks = [];
+        
+        let students = [];
+        let currentSelectedStudentId = null;
+
+        function getFruitEmoji(id) { return fruits[(id - 1) % fruits.length]; }
+        function getFormattedTime() { const now = new Date(); return `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; }
+
+        function updateClock() {
+            const now = new Date(); const dayOfWeek = now.getDay();
+            currentTodayPoints = dailyPointsMap[dayOfWeek];
+            document.getElementById('today-point-info').innerText = `✨ 今天準時可獲得 ${currentTodayPoints} 點！`;
+            if(document.getElementById('label-punctual')) document.getElementById('label-punctual').innerText = `+${currentTodayPoints} 點`;
+            if(document.getElementById('label-late')) document.getElementById('label-late').innerText = `-${currentTodayPoints} 點`;
+        }
+        setInterval(updateClock, 1000); updateClock(); 
+
+        const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxbgegKOPCODOB-nNYZDdYpa0N6FpzUIW3ttsKSntbUNTc5Ud6Eex-6KkYYzvqzNCc/exec";
+
+        // ⭐️ 終極防護：資料修復與正規化
+        function cleanStudentNames() {
+            students.forEach(s => {
+                ['pointHistory', 'lateDates', 'redeemHistory'].forEach(key => {
+                    if (typeof s[key] === 'string') {
+                        try { s[key] = JSON.parse(s[key]); } 
+                        catch(e) { s[key] = []; }
+                    }
+                    if (!Array.isArray(s[key])) s[key] = [];
+                });
+
+                if (typeof s.homework === 'string') {
+                    try { s.homework = JSON.parse(s.homework); } catch(e) { s.homework = {}; }
+                }
+                if (!s.homework || typeof s.homework !== 'object') s.homework = {}; 
+            });
+        }
+
+        // ⭐️ 終極防護：從雲端讀取資料
+        async function loadDataFromCloud() {
+            const savedData = localStorage.getItem('classAppStudents');
+            if (savedData) { 
+                students = JSON.parse(savedData); 
+                cleanStudentNames(); 
+            } else {
+                students = Array.from({ length: 27 }, (_, i) => ({ id: i + 1, name: `${i + 1}號`, points: 0, lateDates: [], redeemHistory: [], pointHistory: [], homework: {} }));
+            }
+            
+            renderStudents();
+            renderAnnouncements(); 
+            renderContactBookList(); 
+            renderRewardsList(); 
+            
+            try {
+                const response = await fetch(GOOGLE_SHEET_API_URL);
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    const localStudents = JSON.parse(localStorage.getItem('classAppStudents') || '[]');
+                    data.forEach(cloudStudent => {
+                        const localS = localStudents.find(s => s.id === cloudStudent.id);
+                        if (localS) {
+                            if (localS.avatar) cloudStudent.avatar = localS.avatar;
+                            if (!cloudStudent.pointHistory) cloudStudent.pointHistory = localS.pointHistory || [];
+                            if (!cloudStudent.redeemHistory) cloudStudent.redeemHistory = localS.redeemHistory || [];
+                            if (!cloudStudent.lateDates) cloudStudent.lateDates = localS.lateDates || [];
+                            if (!cloudStudent.homework) cloudStudent.homework = localS.homework || {};
+                        }
+                    });
+                    
+                    students = data; 
+                    cleanStudentNames(); 
+                    localStorage.setItem('classAppStudents', JSON.stringify(students)); 
+                }
+                renderStudents(); 
+            } catch (error) { console.log("雲端連線失敗，使用本地資料"); }
+        }
+
+        // ⭐️ 終極防護：儲存資料到雲端
+        function saveDataToCloud() {
+            students.forEach(s => {
+                if (Array.isArray(s.pointHistory) && s.pointHistory.length > 50) s.pointHistory = s.pointHistory.slice(-50);
+                if (Array.isArray(s.redeemHistory) && s.redeemHistory.length > 50) s.redeemHistory = s.redeemHistory.slice(-50);
+            });
+
+            try {
+                localStorage.setItem('classAppStudents', JSON.stringify(students));
+                const cloudStudents = students.map(s => { const { avatar, ...rest } = s; return rest; });
+                fetch(GOOGLE_SHEET_API_URL, { method: "POST", body: JSON.stringify(cloudStudents) }).catch(err => console.error(err));
+            } catch (e) {
+                alert("⚠️ 系統儲存空間已滿！請清除部分歷史紀錄或減少自訂大頭貼。");
+            }
+        }
+
+        // ==========================================
+        // ⚙️ 系統設定面板邏輯
+        // ==========================================
+        function openSettingsModal() {
+            const namesText = students.map(s => s.name).join('\n');
+            document.getElementById('settings-students-input').value = namesText;
+            const rewardsText = appRewards.map(r => `${r.name}, ${r.cost}`).join('\n');
+            document.getElementById('settings-rewards-input').value = rewardsText;
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); }
+
+        function saveSystemSettings() {
+            const namesInput = document.getElementById('settings-students-input').value.trim();
+            const namesList = namesInput.split('\n').map(n => n.trim()).filter(n => n !== '');
+            
+            if(namesList.length === 0) { alert("學生名單不能為空喔！"); return; }
+
+            if (namesList.length < students.length) {
+                if (!confirm(`⚠️ 嚴重警告：\n您輸入的人數 (${namesList.length}人) 比原本 (${students.length}人) 少！\n不在名單上的學生資料將會被刪除，確定嗎？`)) { return; }
+            }
+
+            const newStudents = [];
+            namesList.forEach((name, index) => {
+                const id = index + 1;
+                const existing = students.find(s => s.id === id);
+                if (existing) { existing.name = name; newStudents.push(existing); } 
+                else { newStudents.push({ id: id, name: name, points: 0, lateDates: [], redeemHistory: [], pointHistory: [], homework: {} }); }
+            });
+            students = newStudents;
+            saveDataToCloud(); renderStudents();
+
+            const rewardsInput = document.getElementById('settings-rewards-input').value.trim();
+            const rewardsListText = rewardsInput.split('\n').map(r => r.trim()).filter(r => r !== '');
+            
+            appRewards = rewardsListText.map(r => {
+                const parts = r.split(/,|，/);
+                const name = parts[0] ? parts[0].trim() : "未命名獎品";
+                const cost = parts[1] ? parseInt(parts[1].trim()) : 100;
+                return { name: name, cost: isNaN(cost) ? 100 : cost };
+            });
+            localStorage.setItem('classAppRewards', JSON.stringify(appRewards));
+            renderRewardsList();
+
+            alert("💾 設定已成功儲存並套用！");
+            closeSettingsModal();
+        }
+
+        function renderRewardsList() {
+            const container = document.getElementById('reward-list-container'); container.innerHTML = '';
+            if(appRewards.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 py-6 font-bold">請至「系統設定」新增獎品</div>'; return; }
+            appRewards.forEach((reward, index) => {
+                container.innerHTML += `
+                    <label class="flex items-center p-3 bg-white border rounded-lg hover:bg-orange-50 cursor-pointer shadow-sm">
+                        <input type="radio" name="reward" value="${reward.name}" data-cost="${reward.cost}" onchange="autoFillPoints(this)" class="mr-3 w-5 h-5 accent-orange-500">
+                        <span class="flex-1 font-bold text-gray-700 text-sm">${index + 1}. ${reward.name} <span class="text-orange-500 font-black">(${reward.cost}點)</span></span>
+                    </label>`;
+            });
+        }
+
+        // ==========================================
+        // 核心顯示邏輯 (含多選模式支援)
+        // ==========================================
+        function renderStudents() {
+            const grid = document.getElementById('student-grid'); grid.innerHTML = ''; 
+            students.forEach(student => {
+                const warningIcon = student.lateDates.length > 0 ? `<span class="absolute top-1 left-1 md:top-2 md:left-2 bg-red-500 text-white text-xs md:text-sm font-black px-2 py-0.5 rounded-full shadow-lg z-10">${student.lateDates.length}</span>` : '';
+                const card = document.createElement('div'); card.id = `student-card-${student.id}`;
+                
+                card.className = "bg-white p-2 md:p-3 rounded-2xl shadow-md cursor-pointer transform transition-all hover:-translate-y-1 flex flex-col items-center border border-gray-100 relative ring-orange-400 hover:ring-2 hover:border-orange-200";
+                
+                if (isMultiSelectMode && selectedStudentIds.has(student.id)) {
+                    card.classList.add('ring-4', 'ring-indigo-500', 'scale-105', 'bg-indigo-50');
+                }
+
+                card.onclick = () => {
+                    if (isMultiSelectMode) {
+                        toggleStudentSelection(student.id, card);
+                    } else {
+                        openModal(student.id);
+                    }
+                };
+                
+                let avatarHTML = '';
+                if (student.avatar) { avatarHTML = `<img src="${student.avatar}" class="w-full h-full object-cover">`; } 
+                else { avatarHTML = `<img src="images/${student.id}.jpg" loading="lazy" class="w-full h-full object-cover object-top scale-125" onerror="this.outerHTML='<span class=\\'text-4xl md:text-5xl\\'>${getFruitEmoji(student.id)}</span>'">`; }
+
+                card.innerHTML = `${warningIcon}<div class="relative w-16 h-16 md:w-24 md:h-24 rounded-full mb-1 bg-orange-50 border-2 md:border-4 border-white shadow-inner flex items-center justify-center select-none overflow-hidden">${avatarHTML}</div><h3 class="font-bold text-gray-800 text-sm md:text-base truncate w-full text-center mt-1">${student.name}</h3><div class="mt-1 bg-orange-100 text-orange-900 px-1 py-0.5 md:py-1 rounded-lg font-black text-xs md:text-sm w-full text-center border border-orange-200 shadow-inner">${student.points}</div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- 🎲 抽籤防重複功能 (30分鐘冷卻) 開始 ---
+        function randomDraw() {
+            // 確保有學生資料
+            if (typeof students === 'undefined' || students.length === 0) {
+                alert('目前沒有學生資料無法抽籤喔！');
+                return;
+            }
+
+            const now = Date.now();
+            const cooldownMs = 30 * 60 * 1000; // 30 分鐘轉換成毫秒
+
+            // 1. 從記憶體讀取抽籤紀錄，並清除超過 30 分鐘的舊紀錄
+            let drawnHistory = JSON.parse(localStorage.getItem('random_draw_history')) || [];
+            drawnHistory = drawnHistory.filter(record => (now - record.time) < cooldownMs);
+
+            // 2. 篩選出「目前還沒被抽過」的學生 (可抽籤池)
+            const drawnIds = drawnHistory.map(record => record.id);
+            let availableStudents = students.filter(s => !drawnIds.includes(s.id));
+
+            // 3. 防呆機制：如果全班都在 30 分鐘內被抽光了，就自動洗牌重來！
+            if (availableStudents.length === 0) {
+                alert('🎉 全班都已經被抽過一輪囉！現在重新洗牌！');
+                drawnHistory = []; // 清空紀錄
+                availableStudents = students; // 所有人重新加入抽籤池
+            }
+
+            // 4. 從可抽籤池中，隨機抽出一位幸運兒
+            const randomIndex = Math.floor(Math.random() * availableStudents.length);
+            const luckyStudent = availableStudents[randomIndex];
+
+            // 5. 將這次抽中的幸運兒加入紀錄，並存回記憶體
+            drawnHistory.push({ id: luckyStudent.id, time: now });
+            localStorage.setItem('random_draw_history', JSON.stringify(drawnHistory));
+
+            // 6. 顯示抽籤結果 (打開該學生的視窗)
+            // 💡 備註：如果你原本的打開視窗函數不叫 openModal，請把下面這行改成你原本的寫法
+            if (typeof openModal === 'function') {
+                openModal(luckyStudent.id);
+            } else {
+                alert(`🎲 抽中：${luckyStudent.name}`);
+            }
+        }
+        // --- 🎲 抽籤防重複功能 (30分鐘冷卻) 結束 ---
+
+        // ==========================================
+        // 📢 公告牆
+        // ==========================================
+        function renderAnnouncements() {
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+            const originalLength = appAnnouncements.length;
+            
+            appAnnouncements = appAnnouncements.filter(entry => entry.date >= todayStr);
+            if (appAnnouncements.length !== originalLength) { localStorage.setItem('classAppAnnouncements', JSON.stringify(appAnnouncements)); }
+
+            const gridEl = document.getElementById('announcement-grid'); gridEl.innerHTML = '';
+            if (appAnnouncements.length === 0) { gridEl.innerHTML = `<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center text-gray-400 py-10 font-bold border-2 border-dashed border-gray-200 rounded-xl text-lg">目前沒有公告喔！</div>`; return; }
+            
+            appAnnouncements.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+            appAnnouncements.forEach((entry, index) => {
+                const d = new Date(entry.date); const dayStr = isNaN(d) ? '' : ` (${dayNames[d.getDay()]})`;
+                const safeContent = (entry.content || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+                gridEl.innerHTML += `
+                    <div class="bg-white p-5 md:p-6 rounded-2xl border-2 border-blue-100 shadow-sm relative group hover:border-blue-300 transition-all flex flex-col h-full">
+                        <div class="absolute top-4 right-4 flex gap-2">
+                            <button onclick="editAnnouncement(${index})" class="text-blue-600 bg-blue-50 hover:text-blue-800 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors border border-blue-100 shadow-sm">編輯</button>
+                            <button onclick="deleteAnnouncement(${index})" class="text-gray-400 bg-gray-50 hover:text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors border border-gray-100 shadow-sm">刪除</button>
+                        </div>
+                        <h3 class="font-black text-blue-800 border-b-2 border-blue-50 pb-2 mb-3 text-xl md:text-2xl flex items-center gap-2 pr-16 leading-snug">🗓️ ${entry.date}${dayStr}</h3>
+                        <div class="text-gray-800 whitespace-pre-wrap leading-relaxed text-xl md:text-5xl font-medium flex-1 line-clamp-3">${safeContent}</div>
+                    </div>`;
+            });
+        }
+
+        function showAddAnnouncement() {
+            currentEditAnnouncementIndex = -1; 
+            document.getElementById('announcement-editor-area').classList.remove('hidden');
+            const today = new Date();
+            document.getElementById('announcement-date-input').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            document.getElementById('announcement-textarea').value = '';
+        }
+
+        function hideAddAnnouncement() {
+            document.getElementById('announcement-editor-area').classList.add('hidden');
+            currentEditAnnouncementIndex = -1;
+        }
+
+        function editAnnouncement(index) {
+            currentEditAnnouncementIndex = index;
+            const entry = appAnnouncements[index];
+            document.getElementById('announcement-editor-area').classList.remove('hidden');
+            document.getElementById('announcement-date-input').value = entry.date.replace(/\//g, '-');
+            document.getElementById('announcement-textarea').value = entry.content;
+        }
+
+        function saveAnnouncement() {
+            const content = document.getElementById('announcement-textarea').value.trim();
+            const dateVal = document.getElementById('announcement-date-input').value;
+            if(!dateVal) { alert("請選擇日期！"); return; }
+            if(!content) { alert("公告內容不能為空喔！"); return; }
+            const formattedDate = dateVal.replace(/-/g, '/');
+            
+            if (currentEditAnnouncementIndex !== -1) {
+                appAnnouncements[currentEditAnnouncementIndex] = { date: formattedDate, content: content };
+                currentEditAnnouncementIndex = -1; 
+            } else { appAnnouncements.push({ date: formattedDate, content: content }); }
+            
+            appAnnouncements.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            localStorage.setItem('classAppAnnouncements', JSON.stringify(appAnnouncements));
+            hideAddAnnouncement(); renderAnnouncements();
+        }
+
+        function deleteAnnouncement(index) {
+            if(confirm("確定要刪除這則公告嗎？")) {
+                appAnnouncements.splice(index, 1);
+                localStorage.setItem('classAppAnnouncements', JSON.stringify(appAnnouncements));
+                renderAnnouncements();
+            }
+        }
+
+        // ==========================================
+        // 📖 聯絡簿紀錄
+        // ==========================================
+        function renderContactBookList() {
+            const listEl = document.getElementById('contact-book-list'); listEl.innerHTML = '';
+            if (appContactBook.length === 0) { listEl.innerHTML = `<div class="text-center text-gray-400 py-6 font-bold border-2 border-dashed border-gray-200 rounded-xl text-lg">尚無聯絡簿紀錄，點擊上方新增紀錄！</div>`; return; }
+            appContactBook.forEach((entry, index) => {
+                const safeContent = (entry.content || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                listEl.innerHTML += `
+                    <div class="bg-white p-5 md:p-6 rounded-2xl border border-green-100 shadow-sm relative group">
+                        <div class="absolute top-4 right-4 flex gap-2">
+                            <button onclick="editContactBook(${index})" class="text-green-700 hover:text-green-900 text-sm md:text-base font-bold bg-green-100 hover:bg-green-200 px-3 py-1.5 rounded-lg transition-colors flex items-center shadow-sm">編輯</button>
+                            <button onclick="openEnlargeModal('homework', ${index})" class="text-green-700 hover:text-green-900 text-sm md:text-base font-bold bg-green-100 hover:bg-green-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-sm">🔍 <span class="hidden md:inline">放大</span></button>
+                            <button onclick="deleteContactBook(${index})" class="text-gray-400 hover:text-red-500 text-sm md:text-base font-bold bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 transition-colors shadow-sm">刪除</button>
+                        </div>
+                        <h3 class="font-bold text-green-800 border-b border-green-100 pb-3 mb-4 text-xl md:text-2xl pr-40 leading-snug">🗓️ ${entry.date}</h3>
+                        <div class="text-gray-800 whitespace-pre-wrap leading-relaxed text-lg md:text-xl font-medium">${safeContent}</div>
+                    </div>`;
+            });
+        }
+
+        function showAddContactBook() {
+            currentEditContactBookIndex = -1;
+            document.getElementById('contact-book-editor').classList.remove('hidden');
+            const today = new Date();
+            document.getElementById('contact-book-date-input').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            document.getElementById('contact-book-textarea').value = '';
+        }
+
+        function hideAddContactBook() { 
+            document.getElementById('contact-book-editor').classList.add('hidden'); 
+            currentEditContactBookIndex = -1;
+        }
+
+        function editContactBook(index) {
+            currentEditContactBookIndex = index; 
+            const entry = appContactBook[index];
+            document.getElementById('contact-book-editor').classList.remove('hidden');
+            const dateOnly = entry.date.split(' ')[0].replace(/\//g, '-');
+            document.getElementById('contact-book-date-input').value = dateOnly;
+            document.getElementById('contact-book-textarea').value = entry.content;
+        }
+        
+        function saveContactBook() {
+            const content = document.getElementById('contact-book-textarea').value.trim();
+            const dateVal = document.getElementById('contact-book-date-input').value;
+            if(!dateVal) { alert("請選擇日期！"); return; }
+            if(!content) { alert("聯絡簿內容不能為空喔！"); return; }
+            
+            const selectedDate = new Date(dateVal);
+            const formattedDate = `${selectedDate.getFullYear()}/${(selectedDate.getMonth()+1).toString().padStart(2,'0')}/${selectedDate.getDate().toString().padStart(2,'0')} (${dayNames[selectedDate.getDay()]})`;
+
+            if (currentEditContactBookIndex !== -1) {
+                appContactBook[currentEditContactBookIndex] = { date: formattedDate, content: content };
+                currentEditContactBookIndex = -1;
+            } else { appContactBook.unshift({ date: formattedDate, content: content }); }
+
+            appContactBook.sort((a, b) => b.date.localeCompare(a.date));
+            localStorage.setItem('classAppContactBook', JSON.stringify(appContactBook));
+            hideAddContactBook(); renderContactBookList();
+            
+            if(!document.getElementById('info-content-tracking').classList.contains('hidden')){ 
+                populateTrackingDates(); renderTracking(); 
+            }
+        }
+
+        function deleteContactBook(index) {
+            if(confirm("確定要刪除這天的聯絡簿紀錄嗎？")) { 
+                const deletedDate = appContactBook[index].date; 
+                appContactBook.splice(index, 1); 
+                localStorage.setItem('classAppContactBook', JSON.stringify(appContactBook)); 
+                
+                students.forEach(student => {
+                    if (student.homework && student.homework[deletedDate]) { delete student.homework[deletedDate]; }
+                });
+                saveDataToCloud(); 
+                renderContactBookList(); populateTrackingDates(); renderTracking();
+            }
+        }
+
+        // ==========================================
+        // ✅ 作業追蹤系統 
+        // ==========================================
+        function populateTrackingDates() {
+            const select = document.getElementById('tracking-date-select'); select.innerHTML = '';
+            if (appContactBook.length === 0) { select.innerHTML = '<option value="">(無聯絡簿紀錄)</option>'; return; }
+            appContactBook.forEach((entry, i) => {
+                const opt = document.createElement('option');
+                opt.value = i; opt.text = `🗓️ ${entry.date}`; select.appendChild(opt);
+            });
+        }
+
+        function renderTracking() {
+            const select = document.getElementById('tracking-date-select');
+            const container = document.getElementById('tracking-tables-container');
+
+            if (appContactBook.length === 0 || !select.value) {
+                container.innerHTML = '<div class="text-center text-gray-400 py-10 font-bold bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 text-lg">請先於「聯絡簿」新增內容，系統將自動產生追蹤表格！</div>';
+                return;
+            }
+
+            const entry = appContactBook[select.value];
+            currentTrackingDate = entry.date;
+            currentTrackingTasks = (entry.content || '').split('\n').map(t => t.trim()).filter(t => t !== '');
+
+            if (currentTrackingTasks.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-400 py-10 font-bold bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 text-lg">該日聯絡簿無文字內容可追蹤！</div>';
+                return;
+            }
+
+            const numColumns = 3; 
+            const chunkSize = Math.ceil(students.length / numColumns);
+            let html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 items-start pb-2">`;
+
+            for (let c = 0; c < numColumns; c++) {
+                const chunk = students.slice(c * chunkSize, (c + 1) * chunkSize);
+                if (chunk.length === 0) continue;
+
+                html += `
+                <div class="bg-white rounded-2xl border-2 border-purple-200 shadow-sm overflow-hidden flex flex-col relative isolate">
+                    <div class="overflow-x-auto hide-scrollbar">
+                        <table class="w-full text-center border-collapse whitespace-nowrap text-sm">
+                            <thead class="bg-purple-50 text-gray-800">
+                                <tr>
+                                    <th class="sticky left-0 z-20 bg-purple-100 border-b-2 border-r border-purple-200 p-2 md:p-3 min-w-[50px] md:min-w-[60px]">號碼</th>`;
+
+                currentTrackingTasks.forEach((task, i) => {
+                    const safeTask = task.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    html += `
+                                    <th class="border-b-2 border-purple-200 p-2 md:p-3 min-w-[100px] md:min-w-[110px]">
+                                        <div class="truncate max-w-[120px] mx-auto font-black text-purple-900" title="${safeTask}">${safeTask}</div>
+                                        <button onclick="batchSetTracking(${i}, '已交')" class="mt-1.5 text-xs bg-purple-600 text-white hover:bg-purple-700 px-2 py-1.5 rounded-lg transition-colors w-full font-bold shadow-sm">⚡ 全班已交</button>
+                                    </th>`;
+                });
+
+                html += `       </tr></thead><tbody class="bg-white [&>tr:last-child>td]:border-b-0">`;
+
+                chunk.forEach((student) => {
+                    if (!student.homework) student.homework = {};
+                    if (!student.homework[currentTrackingDate]) student.homework[currentTrackingDate] = {};
+
+                    html += `
+                                <tr class="hover:bg-orange-50 transition-colors">
+                                    <td class="sticky left-0 z-10 bg-white border-r border-b border-gray-200 p-2 md:p-3 font-black text-gray-900 shadow-[1px_0_0_0_#e5e7eb]">${student.id}</td>`;
+
+                    currentTrackingTasks.forEach((task, i) => {
+                        const status = student.homework[currentTrackingDate][task] || '缺交';
+                        const colorClass = HW_COLORS[status];
+                        html += `<td class="p-1.5 md:p-2 border-b border-gray-200"><button onclick="cycleTrackingStatus(${student.id}, ${i}, this)" class="w-full py-1.5 md:py-2 px-1 rounded-lg text-xs md:text-sm font-black border transition-colors select-none active:scale-95 shadow-sm ${colorClass}">${status}</button></td>`;
+                    });
+                    html += `   </tr>`;
+                });
+                html += `       </tbody></table></div></div>`;
+            }
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function cycleTrackingStatus(studentId, taskIndex, btnElement) {
+            const task = currentTrackingTasks[taskIndex];
+            const student = students.find(s => s.id === studentId);
+            let currentStatus = student.homework[currentTrackingDate][task] || '缺交';
+            let nextIndex = (HW_STATUSES.indexOf(currentStatus) + 1) % HW_STATUSES.length;
+            let newStatus = HW_STATUSES[nextIndex];
+            student.homework[currentTrackingDate][task] = newStatus;
+            saveDataToCloud();
+            btnElement.className = `w-full py-1.5 md:py-2 px-1 rounded-lg text-xs md:text-sm font-black border transition-colors select-none active:scale-95 shadow-sm ${HW_COLORS[newStatus]}`;
+            btnElement.innerText = newStatus;
+        }
+
+        function batchSetTracking(taskIndex, targetStatus) {
+            const task = currentTrackingTasks[taskIndex];
+            if(!confirm(`確定要將【全班】的這項作業都設為「${targetStatus}」嗎？`)) return;
+            students.forEach(student => {
+                if (!student.homework) student.homework = {};
+                if (!student.homework[currentTrackingDate]) student.homework[currentTrackingDate] = {};
+                student.homework[currentTrackingDate][task] = targetStatus;
+            });
+            saveDataToCloud(); renderTracking();
+        }
+
+        // ==========================================
+        // --- 彈出視窗切換 ---
+        // ==========================================
+        function openInfoModal(type) {
+            document.getElementById('info-modal').classList.remove('hidden'); 
+            document.getElementById('info-content-announcement').classList.add('hidden');
+            document.getElementById('info-content-homework').classList.add('hidden'); 
+            document.getElementById('info-content-tracking').classList.add('hidden');
+            document.getElementById(`info-content-${type}`).classList.remove('hidden');
+            if(type === 'tracking') { populateTrackingDates(); renderTracking(); }
+        }
+
+        function closeInfoModal() {
+            document.getElementById('info-modal').classList.add('hidden');
+            hideAddAnnouncement();
+            hideAddContactBook(); 
+        }
+
+        function openEnlargeModal(type, index = null) {
+            const modal = document.getElementById('enlarge-modal'); const header = document.getElementById('enlarge-header');
+            const box = document.getElementById('enlarge-box'); const titleEl = document.getElementById('enlarge-title'); const contentEl = document.getElementById('enlarge-content');
+            modal.className = 'fixed inset-0 z-[60] flex flex-col transition-colors duration-300';
+            header.className = 'flex justify-between items-center p-4 md:p-6 text-white shadow-lg';
+            
+            if (type === 'homework') {
+                const entry = appContactBook[index];
+                modal.classList.add('bg-green-50'); header.classList.add('bg-green-700'); box.classList.add('border-green-200');
+                titleEl.innerText = `🗓️ ${entry.date}`; contentEl.innerText = entry.content;
+            }
+        }
+        function closeEnlargeModal() { document.getElementById('enlarge-modal').classList.add('hidden'); document.getElementById('enlarge-modal').classList.remove('flex'); }
+
+        // ==========================================
+        // 學生操作視窗區塊
+        // ==========================================
+        function openModal(studentId) {
+            currentSelectedStudentId = studentId; const student = students.find(s => s.id === studentId);
+            document.getElementById('modal-name').innerText = student.name; document.getElementById('modal-points').innerText = student.points;
+            
+            let avatarHTML = '';
+            if (student.avatar) { avatarHTML = `<img src="${student.avatar}" class="w-full h-full object-cover">`; } 
+            else { avatarHTML = `<img src="images/${student.id}.jpg" class="w-full h-full object-cover object-top scale-125" onerror="this.outerHTML='<span class=\\'text-6xl md:text-7xl\\'>${getFruitEmoji(student.id)}</span>'">`; }
+            document.getElementById('modal-avatar').innerHTML = avatarHTML;
+            document.getElementById('avatar-upload').value = '';
+            
+            document.getElementById('custom-point-input').value = ''; 
+            document.getElementById('redeem-point-input').value = ''; 
+            document.querySelectorAll('input[name="reward"]').forEach(radio => radio.checked = false);
+            
+            renderHistoryList(student); renderPointHistoryList(student); switchTabAction('add'); 
+            document.getElementById('action-modal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('action-modal').classList.add('hidden'); currentSelectedStudentId = null; }
+
+        function switchTabAction(tab) {
+            // ⭐️ 移除了 'redeem-history' 的陣列
+            const sections = ['add', 'redeem', 'history', 'point-history'];
+            sections.forEach(s => {
+                const secEl = document.getElementById(`section-${s}`); const tabEl = document.getElementById(`tab-${s}`);
+                if (s === tab) {
+                    secEl.classList.remove('hidden'); tabEl.classList.add('border-b-2', 'border-orange-500', 'text-orange-600'); tabEl.classList.remove('text-gray-500');
+                } else {
+                    secEl.classList.add('hidden'); tabEl.classList.remove('border-b-2', 'border-orange-500', 'text-orange-600'); tabEl.classList.add('text-gray-500');
+                }
+            });
+        }
+
+        function autoFillPoints(radioElement) { document.getElementById('redeem-point-input').value = radioElement.getAttribute('data-cost'); }
+
+        function renderPointHistoryList(student) {
+            const listEl = document.getElementById('point-history-list'); listEl.innerHTML = '';
+            if (!student.pointHistory || student.pointHistory.length === 0) { listEl.innerHTML = `<li class="text-center text-gray-400 font-bold py-6">目前無紀錄喔！</li>`; return; }
+            [...student.pointHistory].reverse().forEach((recordStr) => {
+                const isAdd = recordStr.includes('(+'); const icon = isAdd ? '➕' : '➖';
+                const colorClass = isAdd ? 'text-green-700 border-green-200 bg-green-50' : 'text-red-700 border-red-200 bg-red-50';
+                listEl.innerHTML += `<li class="flex items-start text-xs md:text-sm p-2 rounded border ${colorClass} mb-1"><span class="mr-2 mt-0.5">${icon}</span> <span>${recordStr}</span></li>`;
+            });
+        }
+
+        function renderHistoryList(student) {
+            const listEl = document.getElementById('late-history-list'); listEl.innerHTML = '';
+            if (!student.lateDates || student.lateDates.length === 0) { listEl.innerHTML = `<li class="text-center text-green-600 font-bold py-6">✅ 目前沒有遲到紀錄！</li>`; return; }
+            const reversedDates = [...student.lateDates].reverse();
+            reversedDates.forEach((dateStr, index) => {
+                const originalIndex = student.lateDates.length - 1 - index;
+                listEl.innerHTML += `<li class="flex items-center justify-between text-xs md:text-sm p-2 bg-white rounded border border-red-100 text-red-700 mb-1"><div class="flex items-center"><span class="mr-2">🏃</span> ${dateStr}</div><button onclick="deleteLateRecord(${originalIndex})" class="bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold hover:bg-red-200">消除</button></li>`;
+            });
+        }
+        function deleteLateRecord(index) {
+            if(confirm("確定消除這筆遲到紀錄嗎？")) { const student = students.find(s => s.id === currentSelectedStudentId); student.lateDates.splice(index, 1); renderHistoryList(student); renderStudents(); saveDataToCloud(); }
+        }
+
+        function quickAdd(type) {
+            // --- 📅 個人防呆鎖 開始 ---
+            const todayDate = new Date().toDateString();
+            // 🔑 鎖的名稱加上學生的 ID，變成「個人專屬鎖」！
+            const lockKey = 'attendance_lock_' + currentSelectedStudentId; 
+            
+            if (localStorage.getItem(lockKey) === todayDate) {
+                alert('🚫 這位同學今天已經點過名囉！');
+                return; // 直接擋下，不給點數
+            }
+            // --- 📅 個人防呆鎖 結束 ---
+
+            // 原本的加分與扣分邏輯
+            const student = students.find(s => s.id === currentSelectedStudentId); let pointsToChange = 0;
+            if (type === 'punctual') { 
+                pointsToChange = currentTodayPoints; 
+                student.pointHistory.push(`[${getFormattedTime()}] 準時到校 (+${currentTodayPoints}點)`); 
+            } else if (type === 'late') { 
+                if(!confirm(`確定要登記遲到並扣除 ${currentTodayPoints} 點嗎？`)) return; 
+                pointsToChange = -currentTodayPoints; 
+                student.lateDates.push(`[${getFormattedTime()}] 遲到登記`); 
+                student.pointHistory.push(`[${getFormattedTime()}] 遲到扣除 (-${currentTodayPoints}點)`); 
+            }
+            
+            // 點名成功後，把這位同學的鎖「鎖上」
+            localStorage.setItem(lockKey, todayDate);
+
+            updateStudentPoints(currentSelectedStudentId, pointsToChange); 
+            closeModal();
+        }
+
+        function submitCustomPoints() {
+            const inputVal = document.getElementById('custom-point-input').value;
+            const pts = parseInt(inputVal); 
+            if (isNaN(pts) || inputVal.includes('.')) { alert("⚠️ 請輸入有效的整數！(不可包含小數點)"); return; }
+            if (pts > 1000 || pts < -1000) { if (!confirm(`😲 確定要一次調整 ${pts} 這麼多點嗎？\n請確認有沒有多按了一個零！`)) return; }
+
+            const student = students.find(s => s.id === currentSelectedStudentId); 
+            student.pointHistory.push(`[${getFormattedTime()}] 手動調整 (${pts >= 0 ? '+' : ''}${pts}點)`);
+            updateStudentPoints(currentSelectedStudentId, pts); 
+            closeModal();
+        }
+        
+        function appendNumpad(val) {
+            const input = document.getElementById('custom-point-input');
+            if (val === 'backspace') { input.value = input.value.toString().slice(0, -1); } 
+            else if (val === '-') {
+                if (input.value.startsWith('-')) { input.value = input.value.substring(1); } 
+                else { input.value = '-' + input.value; }
+            } else { input.value += val; }
+        }
+        
+       function submitRedemption() {
+            const selected = document.querySelector('input[name="reward"]:checked'); if (!selected) { alert("請先選擇兌換項目！"); return; }
+            const cost = parseInt(document.getElementById('redeem-point-input').value); if (isNaN(cost) || cost <= 0) { alert("請輸入扣除點數！"); return; }
+            const student = students.find(s => s.id === currentSelectedStudentId); if (student.points < cost) { alert(`點數不足！還差 ${cost - student.points} 點。`); return; }
+            
+            if (confirm(`確定花 ${cost} 點兌換「${selected.value}」嗎？`)) {
+                const timeStr = getFormattedTime(); 
+                // ⭐️ 兌換獎勵直接寫入統一的 pointHistory 帳本裡！
+                student.pointHistory.push(`[${timeStr}] 🛍️ 兌換：${selected.value} (-${cost}點)`);
+                updateStudentPoints(currentSelectedStudentId, -cost); 
+                closeModal(); 
+            }
+        }
+
+        function updateStudentPoints(studentId, pointsToChange) { const index = students.findIndex(s => s.id === studentId); if (index !== -1) { students[index].points += pointsToChange; renderStudents(); saveDataToCloud(); } }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas'); const MAX_SIZE = 200; 
+                    let width = img.width; let height = img.height;
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    const student = students.find(s => s.id === currentSelectedStudentId);
+                    student.avatar = dataUrl;
+                    saveDataToCloud(); renderStudents(); openModal(currentSelectedStudentId); 
+                }; img.src = e.target.result;
+            }; reader.readAsDataURL(file);
+        }
+
+        // ==========================================
+        // ⏳ 倒數計時器邏輯
+        // ==========================================
+        let countdownData = JSON.parse(localStorage.getItem('classAppCountdown')) || { name: '目標', date: '' };
+
+        function updateCountdownDisplay() {
+            const nameEl = document.getElementById('display-event-name'); const daysEl = document.getElementById('display-countdown-days');
+            if (!countdownData.date) { nameEl.innerText = '點擊設定倒數'; daysEl.innerText = '--'; return; }
+            const today = new Date(); today.setHours(0, 0, 0, 0); 
+            const targetDate = new Date(countdownData.date); targetDate.setHours(0, 0, 0, 0);
+            const diffTime = targetDate - today; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays > 0) { nameEl.innerText = `距離 ${countdownData.name}`; daysEl.innerText = diffDays; } 
+            else if (diffDays === 0) { nameEl.innerText = `就是今天！`; daysEl.innerText = '0'; } 
+            else { nameEl.innerText = `${countdownData.name}已過`; daysEl.innerText = Math.abs(diffDays); }
+        }
+
+        function openCountdownSettings() {
+            document.getElementById('input-event-name').value = countdownData.name !== '目標' ? countdownData.name : '';
+            document.getElementById('input-event-date').value = countdownData.date;
+            document.getElementById('countdown-setting-modal').classList.remove('hidden');
+        }
+        function closeCountdownSettings() { document.getElementById('countdown-setting-modal').classList.add('hidden'); }
+        function saveCountdownSettings() {
+            const name = document.getElementById('input-event-name').value.trim();
+            const date = document.getElementById('input-event-date').value;
+            if (!name || !date) { alert('名稱與日期都不能為空喔！'); return; }
+            countdownData = { name, date };
+            localStorage.setItem('classAppCountdown', JSON.stringify(countdownData));
+            updateCountdownDisplay(); closeCountdownSettings();
+        }
+
+        // ==========================================
+        // ✅ 批次 / 多選加扣點邏輯
+        // ==========================================
+        let isMultiSelectMode = false;
+        let selectedStudentIds = new Set();
+
+        function toggleMultiSelectMode() {
+            isMultiSelectMode = !isMultiSelectMode;
+            selectedStudentIds.clear();
+            const bar = document.getElementById('multi-select-bar');
+            const btn = document.getElementById('btn-multi-select');
+            
+            if (isMultiSelectMode) {
+                bar.classList.remove('hidden');
+                setTimeout(() => bar.classList.remove('translate-y-20'), 10); 
+                btn.classList.replace('bg-indigo-100', 'bg-indigo-500');
+                btn.classList.replace('text-indigo-700', 'text-white');
+                btn.innerHTML = `<span class="text-lg md:text-xl">✅</span> <span class="text-sm md:text-base whitespace-nowrap">取消多選</span>`;
+            } else {
+                bar.classList.add('translate-y-20');
+                setTimeout(() => bar.classList.add('hidden'), 300); 
+                btn.classList.replace('bg-indigo-500', 'bg-indigo-100');
+                btn.classList.replace('text-white', 'text-indigo-700');
+                btn.innerHTML = `<span class="text-lg md:text-xl">✅</span> <span class="text-sm md:text-base whitespace-nowrap">多選</span>`;
+                renderStudents(); 
+            }
+            updateMultiSelectUI();
+        }
+
+        function toggleStudentSelection(studentId, card) {
+            if (selectedStudentIds.has(studentId)) {
+                selectedStudentIds.delete(studentId);
+                card.classList.remove('ring-4', 'ring-indigo-500', 'scale-105', 'bg-indigo-50');
+            } else {
+                selectedStudentIds.add(studentId);
+                card.classList.add('ring-4', 'ring-indigo-500', 'scale-105', 'bg-indigo-50');
+            }
+            updateMultiSelectUI();
+        }
+
+        function updateMultiSelectUI() {
+            document.getElementById('multi-select-count').innerText = `已選擇: ${selectedStudentIds.size} 人`;
+        }
+
+        function batchAddPoints(points) {
+            if (selectedStudentIds.size === 0) { alert("請先點選想加扣點的學生喔！"); return; }
+            const timeStr = getFormattedTime();
+            
+            students.forEach(s => {
+                if (selectedStudentIds.has(s.id)) {
+                    s.points += points;
+                    s.pointHistory.push(`[${timeStr}] 批次調整 (${points >= 0 ? '+' : ''}${points}點)`);
+                }
+            });
+            
+            saveDataToCloud();
+            renderStudents();
+            toggleMultiSelectMode(); 
+            alert(`🎉 已成功為 ${selectedStudentIds.size} 位同學 ${points >= 0 ? '增加' : '扣除'} ${Math.abs(points)} 點！`);
+        }
+
+        // ==========================================
+        // ⏱️ 懸浮式課堂計時器邏輯
+        // ==========================================
+        let timerInterval = null;
+        let timerSeconds = 300; 
+        let isTimerRunning = false;
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const s = (timerSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        function setTimer(minutes) {
+            if (isTimerRunning) return; 
+            timerSeconds += minutes * 60;
+            updateTimerDisplay();
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = 0;
+            updateTimerDisplay();
+            document.getElementById('btn-timer-start').innerText = '開始';
+            document.getElementById('btn-timer-start').classList.replace('bg-orange-500', 'bg-teal-500');
+        }
+
+        function toggleTimer() {
+            if (timerSeconds <= 0 && !isTimerRunning) { alert("請先增加時間喔！"); return; }
+            const btn = document.getElementById('btn-timer-start');
+            
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                btn.innerText = '繼續';
+                btn.classList.replace('bg-orange-500', 'bg-teal-500');
+            } else {
+                isTimerRunning = true;
+                btn.innerText = '暫停';
+                btn.classList.replace('bg-teal-500', 'bg-orange-500');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    if (timerSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        btn.innerText = '開始';
+                        btn.classList.replace('bg-orange-500', 'bg-teal-500');
+                        
+                        // 👇 加上這兩行來播放音效
+                        // 🎵 溫柔版：加了音量控制的柔和提示音
+                        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+                        // 1. 建立「音量控制器」(GainNode)，把音量調小到 50% (0.5)
+                        const gainNode = audioCtx.createGain();
+                        gainNode.gain.value = 0.5; // 👈 如果覺得還是太大聲，可以改成 0.1；太小聲可以改 0.5
+                        gainNode.connect(audioCtx.destination);
+
+                        // 2. 建立聲音
+                        const oscillator = audioCtx.createOscillator();
+                        oscillator.type = 'sine'; // 👈 改成 'sine' (正弦波)，這是最圓潤溫柔的聲音，像吹玻璃杯
+                        oscillator.frequency.value = 600; // 頻率調低一點，聽起來比較溫暖
+
+                        oscillator.connect(gainNode);
+
+                        // 3. 播放並設定 5 秒後溫柔地消失
+                        oscillator.start();
+                        // 讓聲音像淡出一樣慢慢變小，才不會有突然切斷的「啵」聲
+                        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 5);
+                        oscillator.stop(audioCtx.currentTime + 5);
+                        
+                        
+                    }
+                }, 1000);
+            }
+        }
+
+        function openTimerModal() { updateTimerDisplay(); document.getElementById('timer-modal').classList.remove('hidden'); }
+        function closeTimerModal() { document.getElementById('timer-modal').classList.add('hidden'); }
+
+        // 初始載入
+        window.onload = () => { loadDataFromCloud(); updateCountdownDisplay(); };
+        // --- 🚨 即時公告看板功能 開始 ---
+        let isRealtimeEditing = false;
+
+        function openRealtimeBoard() {
+            const modal = document.getElementById('realtime-modal');
+            const display = document.getElementById('realtime-display');
+            const input = document.getElementById('realtime-input');
+            
+            const savedText = localStorage.getItem('realtime_announcement') || '目前沒有臨時公告喔！\n\n(請點擊右上角「編輯」開始輸入)';
+            display.innerText = savedText;
+            input.value = savedText;
+            
+            isRealtimeEditing = false;
+            display.classList.remove('hidden');
+            input.classList.add('hidden');
+            document.getElementById('btn-edit-realtime').innerText = '編輯';
+            document.getElementById('btn-edit-realtime').className = "bg-white text-red-600 hover:bg-red-50 px-6 py-2 rounded-xl font-bold text-xl transition-colors shadow-sm";
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeRealtimeBoard() {
+            document.getElementById('realtime-modal').classList.add('hidden');
+            document.getElementById('realtime-modal').classList.remove('flex');
+        }
+
+        function toggleRealtimeEdit() {
+            const display = document.getElementById('realtime-display');
+            const input = document.getElementById('realtime-input');
+            const btn = document.getElementById('btn-edit-realtime');
+            
+            isRealtimeEditing = !isRealtimeEditing;
+            
+            if (isRealtimeEditing) {
+                display.classList.add('hidden');
+                input.classList.remove('hidden');
+                if (input.value.includes('目前沒有臨時公告喔！')) input.value = '';
+                input.focus();
+                btn.innerText = '💾 儲存並發布';
+                btn.className = "bg-teal-600 text-white hover:bg-teal-700 px-6 py-2 rounded-xl font-bold text-xl transition-colors shadow-sm border border-teal-500";
+            } else {
+                const newText = input.value;
+                localStorage.setItem('realtime_announcement', newText);
+                display.innerText = newText || '目前沒有臨時公告喔！\n\n(請點擊右上角「編輯」開始輸入)';
+                input.classList.add('hidden');
+                display.classList.remove('hidden');
+                btn.innerText = '編輯';
+                btn.className = "bg-white text-red-600 hover:bg-red-50 px-6 py-2 rounded-xl font-bold text-xl transition-colors shadow-sm";
+            }
+        }
+        // --- 🚨 即時公告看板功能 結束 ---
+        // --- 🎵 中午音樂點播登記功能 開始 ---
+        let musicSchedules = JSON.parse(localStorage.getItem('class_music_schedules')) || [];
+
+        function addMusicSchedule() {
+            const dateInput = document.getElementById('music-date').value;
+            const numberInput = document.getElementById('music-number').value;
+
+            if (!dateInput || !numberInput) {
+                alert('請先選擇日期並輸入座號喔！');
+                return;
+            }
+
+            const newSchedule = {
+                id: Date.now().toString(),
+                date: dateInput,
+                number: numberInput
+            };
+
+            musicSchedules.push(newSchedule);
+            // 自動依照日期「由近到遠」排序，方便老師看
+            musicSchedules.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            localStorage.setItem('class_music_schedules', JSON.stringify(musicSchedules)); // 存檔
+            
+            // 登記完後自動清空輸入框
+            document.getElementById('music-date').value = '';
+            document.getElementById('music-number').value = '';
+            
+            renderMusicSchedule();
+        }
+
+        function deleteMusicSchedule(id) {
+            if(!confirm('確定要刪除這筆音樂排程嗎？')) return;
+            musicSchedules = musicSchedules.filter(s => s.id !== id);
+            localStorage.setItem('class_music_schedules', JSON.stringify(musicSchedules));
+            renderMusicSchedule();
+        }
+
+        function renderMusicSchedule() {
+            const list = document.getElementById('music-schedule-list');
+            if (!list) return;
+
+            if (musicSchedules.length === 0) {
+                list.innerHTML = '<li class="text-gray-400 text-sm text-center py-4 font-bold">目前還沒有人登記喔！🎵</li>';
+                return;
+            }
+
+            list.innerHTML = musicSchedules.map(schedule => {
+                // 將 2024-05-12 轉成漂亮的 5/12
+                const dateObj = new Date(schedule.date);
+                const displayDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+                
+                return `
+                    <li class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-200 shadow-sm animate-[fadeIn_0.3s_ease-in-out]">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-pink-100 text-pink-700 font-black px-2 py-1 rounded-md text-sm">${displayDate}</span>
+                            <span class="font-bold text-gray-800">${schedule.number} 號</span>
+                        </div>
+                        <button onclick="deleteMusicSchedule('${schedule.id}')" class="text-gray-300 hover:text-red-500 transition-colors font-bold px-2 text-xl leading-none">&times;</button>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        // 網頁重新載入時，自動把存檔的排程顯示出來
+        window.addEventListener('load', () => {
+            renderMusicSchedule();
+        });
+        // --- 🎵 中午音樂點播登記功能 結束 ---
+    </script>
+</body>
+</html>
