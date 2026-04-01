@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>班級專屬入口網</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
+   <style>
         body { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -152,8 +152,8 @@
         </div>
     </div>
 
-    <div id="info-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-2 md:p-4">
-        <div class="bg-white p-4 md:p-6 rounded-3xl shadow-2xl w-full max-w-[95vw] xl:max-w-[90vw] relative transform transition-all border border-gray-100 max-h-[95vh] flex flex-col">
+    <div id="info-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-2">
+         <div class="bg-white p-3 md:p-5 rounded-2xl shadow-2xl w-full max-w-[98vw] xl:max-w-[98vw] h-[98vh] max-h-[98vh] relative transform transition-all border border-gray-100 flex flex-col">
             <button onclick="closeInfoModal()" class="absolute top-2 right-4 text-gray-400 hover:text-red-500 text-4xl font-light z-40">&times;</button>
             
             <div id="info-content-announcement" class="hidden flex-1 overflow-y-auto hide-scrollbar max-w-full px-4 mx-auto w-full">
@@ -843,7 +843,7 @@
                                     <th class="sticky left-0 z-20 bg-purple-100 border-b-2 border-r border-purple-200 p-3 md:p-4 min-w-[70px] md:min-w-[80px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">號碼</th>`;
 
                 currentTrackingTasks.forEach((task, i) => {
-                   const safeTask = task.replace(/</g, "<").replace(/>/g, ">").replace(/"/g, """).replace(/'/g, "'");
+                   const safeTask = task.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
                     html += `
                                     <th class="border-b-2 border-purple-200 p-3 md:p-4 min-w-[140px] md:min-w-[160px]">
                                         <div class="truncate max-w-[180px] mx-auto font-black text-purple-900" title="${safeTask}">${safeTask}</div>
@@ -875,29 +875,6 @@
             }
             html += `</div>`;
             container.innerHTML = html;
-        }
-
-        function cycleTrackingStatus(studentId, taskIndex, btnElement) {
-            const task = currentTrackingTasks[taskIndex];
-            const student = students.find(s => s.id === studentId);
-            let currentStatus = student.homework[currentTrackingDate][task] || '缺交';
-            let nextIndex = (HW_STATUSES.indexOf(currentStatus) + 1) % HW_STATUSES.length;
-            let newStatus = HW_STATUSES[nextIndex];
-            student.homework[currentTrackingDate][task] = newStatus;
-            saveDataToCloud();
-            btnElement.className = `w-full py-1.5 md:py-2 px-1 rounded-lg text-xs md:text-sm font-black border transition-colors select-none active:scale-95 shadow-sm ${HW_COLORS[newStatus]}`;
-            btnElement.innerText = newStatus;
-        }
-
-        function batchSetTracking(taskIndex, targetStatus) {
-            const task = currentTrackingTasks[taskIndex];
-            if(!confirm(`確定要將【全班】的這項作業都設為「${targetStatus}」嗎？`)) return;
-            students.forEach(student => {
-                if (!student.homework) student.homework = {};
-                if (!student.homework[currentTrackingDate]) student.homework[currentTrackingDate] = {};
-                student.homework[currentTrackingDate][task] = targetStatus;
-            });
-            saveDataToCloud(); renderTracking();
         }
 
         // ==========================================
