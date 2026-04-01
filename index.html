@@ -408,7 +408,13 @@
         function updateClock() {
             const now = new Date(); const dayOfWeek = now.getDay();
             currentTodayPoints = dailyPointsMap[dayOfWeek];
-            document.getElementById('today-point-info').innerText = `✨ 今天準時可獲得 ${currentTodayPoints} 點！`;
+            
+            // 加上安全檢查：如果元素還在才更新文字
+            const pointInfoEl = document.getElementById('today-point-info');
+            if (pointInfoEl) {
+                pointInfoEl.innerText = `✨ 今天準時可獲得 ${currentTodayPoints} 點！`;
+            }
+            
             if(document.getElementById('label-punctual')) document.getElementById('label-punctual').innerText = `+${currentTodayPoints} 點`;
             if(document.getElementById('label-late')) document.getElementById('label-late').innerText = `-${currentTodayPoints} 點`;
         }
@@ -924,14 +930,18 @@
         function closeModal() { document.getElementById('action-modal').classList.add('hidden'); currentSelectedStudentId = null; }
 
         function switchTabAction(tab) {
-            // ⭐️ 移除了 'redeem-history' 的陣列
-            const sections = ['add', 'redeem', 'history', 'point-history'];
+            // 將 'history' 移除，並加上 if 安全檢查
+            const sections = ['add', 'redeem', 'point-history'];
             sections.forEach(s => {
-                const secEl = document.getElementById(`section-${s}`); const tabEl = document.getElementById(`tab-${s}`);
-                if (s === tab) {
-                    secEl.classList.remove('hidden'); tabEl.classList.add('border-b-2', 'border-orange-500', 'text-orange-600'); tabEl.classList.remove('text-gray-500');
-                } else {
-                    secEl.classList.add('hidden'); tabEl.classList.remove('border-b-2', 'border-orange-500', 'text-orange-600'); tabEl.classList.add('text-gray-500');
+                const secEl = document.getElementById(`section-${s}`); 
+                const tabEl = document.getElementById(`tab-${s}`);
+                
+                if (secEl && tabEl) {
+                    if (s === tab) {
+                        secEl.classList.remove('hidden'); tabEl.classList.add('border-b-2', 'border-orange-500', 'text-orange-600'); tabEl.classList.remove('text-gray-500');
+                    } else {
+                        secEl.classList.add('hidden'); tabEl.classList.remove('border-b-2', 'border-orange-500', 'text-orange-600'); tabEl.classList.add('text-gray-500');
+                    }
                 }
             });
         }
@@ -949,7 +959,11 @@
         }
 
         function renderHistoryList(student) {
-            const listEl = document.getElementById('late-history-list'); listEl.innerHTML = '';
+            const listEl = document.getElementById('late-history-list'); 
+            // 如果找不到遲到清單的 HTML，就直接結束這個函式
+            if (!listEl) return; 
+            
+            listEl.innerHTML = '';
             if (!student.lateDates || student.lateDates.length === 0) { listEl.innerHTML = `<li class="text-center text-green-600 font-bold py-6">✅ 目前沒有遲到紀錄！</li>`; return; }
             const reversedDates = [...student.lateDates].reverse();
             reversedDates.forEach((dateStr, index) => {
